@@ -1,0 +1,500 @@
+{
+	"info": {
+		"_postman_id": "94b19df6-0428-4ac0-aecf-8efdc9a2d54c",
+		"name": "gym-crm",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5092762"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/auth/login?username=john.doe&password=1234",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "john.doe"
+								},
+								{
+									"key": "password",
+									"value": "1234"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"john.doe\",\r\n    \"oldPassword\": \"1234\",\r\n    \"newPassword\": \"11235\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/auth/change-password",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Trainee",
+			"item": [
+				{
+					"name": "Create a Trainee",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstName\": \"Ahmet\",\r\n  \"lastName\": \"Kek\",\r\n  \"dateOfBirth\": \"1990-01-01\",\r\n  \"address\": \"Istanbul\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainees",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Trainee",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"john.doe\",\r\n    \"firstName\": \"John\",\r\n    \"lastName\": \"Doe\",\r\n    \"dateOfBirth\": \"1991-01-01\",\r\n    \"address\": \"Izmir\",\r\n    \"isActive\": true\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainees",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate Trainee Status",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"john.doe\",\r\n    \"isActive\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainees/status",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainees",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Trainee Trainers",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"traineeUsername\": \"john.doe\",\r\n    \"trainers\": [\r\n        {\r\n            \"trainerUsername\": \"olivia.moore\"\r\n        },\r\n        {\r\n            \"trainerUsername\": \"sophia.taylor\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainees/trainers",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainees",
+								"trainers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve a Trainee By Username",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainees/profile?username=john.doe",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainees",
+								"profile"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "john.doe"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Trainee Unassigned Trainers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainees/unassigned-trainers?username=john.doe",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainees",
+								"unassigned-trainers"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "john.doe"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve a Training Trainee With Criteria",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainees/trainings?username=john.doe&periodFrom=2025-07-20&periodTo=2025-07-26&trainerName=Jane&trainingType=Cardio",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainees",
+								"trainings"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "john.doe"
+								},
+								{
+									"key": "periodFrom",
+									"value": "2025-07-20"
+								},
+								{
+									"key": "periodTo",
+									"value": "2025-07-26"
+								},
+								{
+									"key": "trainerName",
+									"value": "Jane"
+								},
+								{
+									"key": "trainingType",
+									"value": "Cardio"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Trainee By Username",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainees/ahmet.kek",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainees",
+								"ahmet.kek"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Training",
+			"item": [
+				{
+					"name": "Create a Training",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"traineeUsername\": \"john.doe\",\r\n  \"trainerUsername\": \"tim.cook\",\r\n  \"trainingName\": \"Morning Cardio\",\r\n  \"trainingDate\": \"2025-08-22 10:00:00\",\r\n  \"trainingDuration\": 60\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainings",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Trainer",
+			"item": [
+				{
+					"name": "Create a Trainer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstName\": \"Tim\",\r\n  \"lastName\": \"Cook\",\r\n  \"specialization\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainers",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Trainer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"tim.cook\",\r\n    \"firstName\": \"Tim\",\r\n    \"lastName\": \"Cookie\",\r\n    \"specialization\": 1,\r\n    \"active\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainers/profile",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainers",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Activate a Trainer",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"tim.cook\",\r\n    \"isActive\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainers/status",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainers",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve a Trainer By Username",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/v1/trainers/profile?username=tim.cook",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"trainers",
+								"profile"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "tim.cook"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Training Type",
+			"item": [
+				{
+					"name": "Retrieve all Training Types",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Yoga\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/v1/training-types",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"training-types"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "http://localhost:8080",
+			"type": "default"
+		}
+	]
+}

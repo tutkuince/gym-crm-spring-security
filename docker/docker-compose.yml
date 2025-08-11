@@ -1,0 +1,115 @@
+services:
+  postgres-prod:
+    container_name: gym_crm_postgres_prod
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: sa
+      POSTGRES_PASSWORD: s3cr3t
+      POSTGRES_DB: gymcrm
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  postgres-stg:
+    container_name: gym_crm_postgres_stg
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: stg_sa
+      POSTGRES_PASSWORD: stg_s3cr3t
+      POSTGRES_DB: gymcrm_stg
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres-stg:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  postgres-dev:
+    container_name: gym_crm_postgres_dev
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: dev_sa
+      POSTGRES_PASSWORD: dev_s3cr3t
+      POSTGRES_DB: gymcrm_dev
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres-dev:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  postgres-local:
+    container_name: gym_crm_postgres_local
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: local_sa
+      POSTGRES_PASSWORD: local_s3cr3t
+      POSTGRES_DB: gymcrm_local
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres-local:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: gym_crm_pgadmin_container
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: gym_crm_prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: gym_crm_grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - backend
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    restart: unless-stopped
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres:
+  postgres-local:
+  postgres-dev:
+  postgres-stg:
+  pgadmin:
+  grafana-storage:

@@ -1,0 +1,44 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: gym-crm-stg
+
+  datasource:
+    url: jdbc:postgresql://localhost:5435/gymcrm_stg
+    username: stg_sa
+    password: stg_s3cr3t
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true  # could be false
+
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data-stg.sql
+
+logging:
+  level:
+    root: WARN
+    com.epam.gymcrm: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
