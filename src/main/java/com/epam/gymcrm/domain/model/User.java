@@ -9,6 +9,7 @@ public class User {
     private String lastName;
     private String username;
     private String password;
+    private String rawPassword;
     private Boolean isActive;
 
     public User() {
@@ -52,6 +53,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRawPassword() {
+        return rawPassword;
+    }
+
+    public void setRawPassword(String rawPassword) {
+        this.rawPassword = rawPassword;
     }
 
     public Boolean getActive() {
