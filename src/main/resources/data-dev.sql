@@ -1,15 +1,15 @@
 -- USERS
 INSERT INTO users (first_name, last_name, username, password, is_active)
 VALUES
-    ('John', 'Doe', 'john.doe', '1234', true),
-    ('Jane', 'Dev', 'jane.dev', 'abcd', true),
-    ('Michael', 'Brown', 'michael.brown', 'pass', true),
-    ('Emily', 'Davis', 'emily.davis', '1111', true),
-    ('Sophia', 'Taylor', 'sophia.taylor', 'qwerty', true),
-    ('William', 'Wilson', 'william.wilson', 'will123', true),
-    ('Olivia', 'Moore', 'olivia.moore', 'oliviapw', true),
-    ('James', 'Miller', 'james.miller', 'jamespw', false),
-    ('Emma', 'Anderson', 'emma.anderson', 'emma2024', true);
+    ('John', 'Doe', 'john.doe', '$2a$10$iN0lUG1/ekAPik1AIA8hmu41akz/3riRyGIbvlxGt58NR7NUVjQce', true),
+    ('Jane', 'Dev', 'jane.dev', '$2a$10$iN0lUG1/ekAPik1AIA8hmu41akz/3riRyGIbvlxGt58NR7NUVjQce', true),
+    ('Michael', 'Brown', 'michael.brown', '$2a$10$iN0lUG1/ekAPik1AIA8hmu41akz/3riRyGIbvlxGt58NR7NUVjQce', true),
+    ('Emily', 'Davis', 'emily.davis', '$2a$10$iN0lUG1/ekAPik1AIA8hmu41akz/3riRyGIbvlxGt58NR7NUVjQce', true),
+    ('Sophia', 'Taylor', 'sophia.taylor', '$2a$10$iN0lUG1/ekAPik1AIA8hmu41akz/3riRyGIbvlxGt58NR7NUVjQce', true),
+    ('William', 'Wilson', 'william.wilson', '$2a$10$iN0lUG1/ekAPik1AIA8hmu41akz/3riRyGIbvlxGt58NR7NUVjQce', true),
+    ('Olivia', 'Moore', 'olivia.moore', '$2a$10$iN0lUG1/ekAPik1AIA8hmu41akz/3riRyGIbvlxGt58NR7NUVjQce', true),
+    ('James', 'Miller', 'james.miller', '$2a$10$iN0lUG1/ekAPik1AIA8hmu41akz/3riRyGIbvlxGt58NR7NUVjQce', false),
+    ('Emma', 'Anderson', 'emma.anderson', '$2a$10$iN0lUG1/ekAPik1AIA8hmu41akz/3riRyGIbvlxGt58NR7NUVjQce', true);
 
 -- TRAINING_TYPE
 INSERT INTO training_types (training_type_name)
