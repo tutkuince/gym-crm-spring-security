@@ -25,6 +25,17 @@ spring:
       mode: always
       data-locations: classpath:data-dev.sql
 
+security:
+  bruteforce:
+    max-attempts: 3
+    block-minutes: 0.25   # ~15seconds for tests
+  jwt:
+    secret: 'this-is-a-very-long-32+chars-secret-key!!'
+    issuer: gym-crm
+    access-token-minutes: 5
+  cors:
+    allowed-origins: "http://localhost:3000"
+
 logging:
   level:
     root: INFO

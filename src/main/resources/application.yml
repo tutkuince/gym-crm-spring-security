@@ -27,6 +27,19 @@ spring:
       mode: always
       data-locations: classpath:data.sql
 
+security:
+  bruteforce:
+    max-attempts: 3
+    block-minutes: 5
+
+  jwt:
+    secret: ${JWT_SECRET:change-me}
+    issuer: gym-crm
+    access-token-minutes: 30
+
+  cors:
+    allowed-origins: "https://app.gym-crm.com"
+
 logging:
   level:
     root: WARN
@@ -36,10 +49,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: health,info,prometheus
   endpoint:
     health:
-      show-details: always
+      show-details: when_authorized
   prometheus:
     metrics:
       export:

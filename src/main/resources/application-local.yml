@@ -25,6 +25,17 @@ spring:
       mode: always
       data-locations: classpath:data-local.sql
 
+security:
+  bruteforce:
+    max-attempts: 3
+    block-minutes: 0.5   # ~15seconds for tests
+  jwt:
+    secret: change-me
+    issuer: gym-crm
+    access-token-minutes: 2
+  cors:
+    allowed-origins: "http://localhost:3000"
+
 logging:
   level:
     root: INFO
