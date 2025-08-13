@@ -1,5 +1,6 @@
 package com.epam.gymcrm.domain.exception;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -95,6 +96,19 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(AccountLockedException.class)
+    public ResponseEntity<ErrorResponse> handleLocked(AccountLockedException ex) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Retry-After", String.valueOf(ex.getRetryAfterSeconds()));
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.LOCKED.value(),
+                "ACCOUNT_LOCKED",
+                String.format("Too many failed attempts. Retry after %s seconds (when applicable)", ex.getRetryAfterSeconds()),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(body, headers, HttpStatus.LOCKED); // 423
     }
 
     @ExceptionHandler(Exception.class)
