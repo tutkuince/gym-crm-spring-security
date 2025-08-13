@@ -33,7 +33,7 @@ public class TokenBlacklist {
 
     public boolean isInvalid(String jti) {
         Long exp = store.get(jti);
-        if (exp == null) return false;
+        if (Objects.isNull(exp)) return false;
         if (exp > System.currentTimeMillis()) return true;
         store.remove(jti, exp);
         return false;
