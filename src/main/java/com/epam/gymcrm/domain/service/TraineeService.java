@@ -10,16 +10,14 @@ import com.epam.gymcrm.db.entity.UserEntity;
 import com.epam.gymcrm.db.repository.TraineeRepository;
 import com.epam.gymcrm.db.repository.TrainerRepository;
 import com.epam.gymcrm.db.repository.TrainingRepository;
-import com.epam.gymcrm.db.repository.UserRepository;
 import com.epam.gymcrm.db.repository.specification.TrainingSpecification;
+import com.epam.gymcrm.domain.exception.BadRequestException;
+import com.epam.gymcrm.domain.exception.NotFoundException;
 import com.epam.gymcrm.domain.mapper.TraineeDomainMapper;
 import com.epam.gymcrm.domain.mapper.TrainerDomainMapper;
 import com.epam.gymcrm.domain.model.Trainee;
 import com.epam.gymcrm.domain.model.User;
-import com.epam.gymcrm.domain.exception.BadRequestException;
-import com.epam.gymcrm.domain.exception.NotFoundException;
 import com.epam.gymcrm.infrastructure.monitoring.metrics.TraineeMetrics;
-import com.epam.gymcrm.util.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,30 +36,29 @@ public class TraineeService {
 
     private final TraineeRepository traineeRepository;
     private final TrainerRepository trainerRepository;
-    private final UserRepository userRepository;
     private final TrainingRepository trainingRepository;
     private final TraineeMetrics traineeMetrics;
+    private final UserAccountService userAccountService;
 
     private static final Logger logger = LoggerFactory.getLogger(TraineeService.class);
 
     public TraineeService(
             TraineeRepository traineeRepository,
             TrainerRepository trainerRepository,
-            UserRepository userRepository,
             TrainingRepository trainingRepository,
-            TraineeMetrics traineeMetrics) {
+            TraineeMetrics traineeMetrics, UserAccountService userAccountService) {
         this.traineeRepository = traineeRepository;
         this.trainerRepository = trainerRepository;
-        this.userRepository = userRepository;
         this.trainingRepository = trainingRepository;
         this.traineeMetrics = traineeMetrics;
+        this.userAccountService = userAccountService;
     }
 
     @Transactional
     public TraineeRegistrationResponse createTrainee(TraineeRegistrationRequest traineeRegistrationRequest) {
         logger.info("Creating new trainee: {} {}", traineeRegistrationRequest.firstName(), traineeRegistrationRequest.lastName());
 
-        User user = UserUtils.createUser(traineeRegistrationRequest.firstName(), traineeRegistrationRequest.lastName(), userRepository);
+        User user = userAccountService.createUser(traineeRegistrationRequest.firstName(), traineeRegistrationRequest.lastName());
 
         // Check if user is already registered as a trainer
         if (trainerRepository.existsByUserUsername(user.getUsername())) {
@@ -87,9 +84,8 @@ public class TraineeService {
         TraineeEntity savedTraineeEntity = traineeRepository.save(traineeEntity);
         traineeMetrics.incrementRegistered();
 
-
         logger.info("Trainee created: id={}, username={}", savedTraineeEntity.getId(), savedTraineeEntity.getUser().getUsername());
-        return TraineeResponseMapper.toTraineeRegisterResponse(savedTraineeEntity);
+        return TraineeResponseMapper.toTraineeRegisterResponse(savedTraineeEntity, user.getRawPassword());
     }
 
     public TraineeProfileResponse findByUsername(String username) {

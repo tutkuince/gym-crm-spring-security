@@ -15,16 +15,18 @@ import com.epam.gymcrm.api.payload.response.UpdateTrainerProfileResponse;
 import com.epam.gymcrm.db.entity.TrainerEntity;
 import com.epam.gymcrm.db.entity.TrainingEntity;
 import com.epam.gymcrm.db.entity.TrainingTypeEntity;
-import com.epam.gymcrm.db.repository.*;
+import com.epam.gymcrm.db.repository.TraineeRepository;
+import com.epam.gymcrm.db.repository.TrainerRepository;
+import com.epam.gymcrm.db.repository.TrainingRepository;
+import com.epam.gymcrm.db.repository.TrainingTypeRepository;
 import com.epam.gymcrm.db.repository.specification.TrainerTrainingSpecification;
+import com.epam.gymcrm.domain.exception.BadRequestException;
+import com.epam.gymcrm.domain.exception.NotFoundException;
 import com.epam.gymcrm.domain.mapper.TrainerDomainMapper;
 import com.epam.gymcrm.domain.mapper.TrainingTypeDomainMapper;
 import com.epam.gymcrm.domain.model.Trainer;
 import com.epam.gymcrm.domain.model.User;
-import com.epam.gymcrm.domain.exception.BadRequestException;
-import com.epam.gymcrm.domain.exception.NotFoundException;
 import com.epam.gymcrm.infrastructure.monitoring.metrics.TrainerMetrics;
-import com.epam.gymcrm.util.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
@@ -41,27 +43,27 @@ import static com.epam.gymcrm.util.DateConstants.DEFAULT_DATE_FORMATTER;
 public class TrainerService {
 
     private final TrainerRepository trainerRepository;
-    private final UserRepository userRepository;
     private final TraineeRepository traineeRepository;
     private final TrainingRepository trainingRepository;
     private final TrainingTypeRepository trainingTypeRepository;
     private final TrainerMetrics metrics;
+    private final UserAccountService userAccountService;
 
     private static final Logger logger = LoggerFactory.getLogger(TrainerService.class);
 
     public TrainerService(
             TrainerRepository trainerRepository,
-            UserRepository userRepository,
             TraineeRepository traineeRepository,
             TrainingRepository trainingRepository,
             TrainingTypeRepository trainingTypeRepository,
-            TrainerMetrics metrics) {
+            TrainerMetrics metrics,
+            UserAccountService userAccountService) {
         this.trainerRepository = trainerRepository;
-        this.userRepository = userRepository;
         this.traineeRepository = traineeRepository;
         this.trainingRepository = trainingRepository;
         this.trainingTypeRepository = trainingTypeRepository;
         this.metrics = metrics;
+        this.userAccountService = userAccountService;
     }
 
     @Transactional
@@ -74,7 +76,7 @@ public class TrainerService {
                     return new NotFoundException("Specialization (training type) not found. id=" + request.specialization());
                 });
 
-        User user = UserUtils.createUser(request.firstName(), request.lastName(), userRepository);
+        User user = userAccountService.createUser(request.firstName(), request.lastName());
 
         if (traineeRepository.existsByUserUsername(user.getUsername())) {
             logger.warn("Registration failed: User cannot be both trainer and trainee. username={}", user.getUsername());
@@ -92,7 +94,7 @@ public class TrainerService {
 
         logger.info("Trainer registered successfully. id={}, username={}", saved.getId(), saved.getUser().getUsername());
 
-        return TrainerRegistrationResponseMapper.toResponse(saved);
+        return TrainerRegistrationResponseMapper.toResponse(saved, user.getRawPassword());
     }
 
     public TrainerProfileResponse getTrainerProfile(String username) {
