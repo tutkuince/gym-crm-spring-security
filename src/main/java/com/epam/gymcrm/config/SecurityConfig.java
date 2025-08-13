@@ -43,6 +43,8 @@ public class SecurityConfig {
                                 "/api/v1/auth/login",
                                 "/api/v1/trainees",
                                 "/api/v1/trainers").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/training-types").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder)))
@@ -57,7 +59,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(List.of("${security.cors.allowed-origins}"));
-        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
+        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH"));
         cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
