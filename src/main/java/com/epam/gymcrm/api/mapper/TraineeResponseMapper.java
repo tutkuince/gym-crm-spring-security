@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class TraineeResponseMapper {
 
-    public static TraineeRegistrationResponse toTraineeRegisterResponse(TraineeEntity traineeEntity) {
+    public static TraineeRegistrationResponse toTraineeRegisterResponse(TraineeEntity traineeEntity, String rawPassword) {
         UserEntity user = traineeEntity.getUser();
         if (Objects.isNull(user)) {
             throw new IllegalStateException(
@@ -18,6 +18,6 @@ public class TraineeResponseMapper {
                     )
             );
         }
-        return new TraineeRegistrationResponse(traineeEntity.getUser().getUsername(), traineeEntity.getUser().getPassword());
+        return new TraineeRegistrationResponse(user.getUsername(), rawPassword);
     }
 }
