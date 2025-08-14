@@ -22,6 +22,7 @@ import com.epam.gymcrm.infrastructure.monitoring.metrics.TrainerMetrics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -33,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -56,6 +58,8 @@ class TrainerServiceTest {
     private TraineeRepository traineeRepository;
     @Mock
     private TrainingRepository trainingRepository;
+    @Mock
+    private UserAccountService userAccountService;
 
 
     @InjectMocks
@@ -90,17 +94,21 @@ class TrainerServiceTest {
         TrainingTypeEntity specialization = new TrainingTypeEntity();
         specialization.setId(1L);
         specialization.setTrainingTypeName("Fitness");
-
         when(trainingTypeRepository.findById(1L)).thenReturn(Optional.of(specialization));
+
+        com.epam.gymcrm.domain.model.User newUser = new com.epam.gymcrm.domain.model.User();
+        newUser.setUsername("ali.veli");
+        newUser.setRawPassword("12345");
+        when(userAccountService.createUser("Ali", "Veli")).thenReturn(newUser);
+
         when(traineeRepository.existsByUserUsername("ali.veli")).thenReturn(false);
 
         TrainerEntity savedEntity = new TrainerEntity();
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("ali.veli");
-        userEntity.setPassword("12345");
         savedEntity.setUser(userEntity);
+        when(trainerRepository.save(any(TrainerEntity.class))).thenReturn(savedEntity);
 
-        when(trainerRepository.save(any())).thenReturn(savedEntity);
         doNothing().when(metrics).incrementRegistered();
 
         TrainerRegistrationResponse response = trainerService.createTrainer(request);
@@ -109,9 +117,15 @@ class TrainerServiceTest {
         assertEquals("ali.veli", response.username());
         assertEquals("12345", response.password());
 
+        ArgumentCaptor<TrainerEntity> captor = ArgumentCaptor.forClass(TrainerEntity.class);
+        verify(trainerRepository).save(captor.capture());
+        TrainerEntity toSave = captor.getValue();
+        assertThat(toSave.getUser()).isNotNull();
+
         verify(trainingTypeRepository).findById(1L);
+        verify(userAccountService).createUser("Ali", "Veli");
         verify(traineeRepository).existsByUserUsername("ali.veli");
-        verify(trainerRepository).save(any());
+        verify(metrics).incrementRegistered();
     }
 
     @Test
@@ -135,13 +149,24 @@ class TrainerServiceTest {
         specialization.setId(1L);
         specialization.setTrainingTypeName("Fitness");
         when(trainingTypeRepository.findById(1L)).thenReturn(Optional.of(specialization));
+
+        com.epam.gymcrm.domain.model.User newUser = new com.epam.gymcrm.domain.model.User();
+        newUser.setUsername("ali.veli");
+        newUser.setRawPassword("does-not-matter");
+        when(userAccountService.createUser("Ali", "Veli")).thenReturn(newUser);
+
         when(traineeRepository.existsByUserUsername("ali.veli")).thenReturn(true);
 
-        BadRequestException ex = assertThrows(BadRequestException.class, () -> trainerService.createTrainer(request));
+        BadRequestException ex = assertThrows(BadRequestException.class,
+                () -> trainerService.createTrainer(request));
 
         assertTrue(ex.getMessage().contains("User cannot be both trainer and trainee"));
+
+        verify(trainingTypeRepository).findById(1L);
+        verify(userAccountService).createUser("Ali", "Veli");
         verify(traineeRepository).existsByUserUsername("ali.veli");
         verify(trainerRepository, never()).save(any());
+        verify(metrics, never()).incrementRegistered();
     }
 
     @Test

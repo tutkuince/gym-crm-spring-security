@@ -14,6 +14,7 @@ import com.epam.gymcrm.infrastructure.monitoring.metrics.TraineeMetrics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -43,6 +44,8 @@ class TraineeServiceTest {
     private TrainingRepository trainingRepository;
     @Mock
     private TraineeMetrics metrics;
+    @Mock
+    private UserAccountService userAccountService;
 
     @InjectMocks
     private TraineeService traineeService;
@@ -76,21 +79,35 @@ class TraineeServiceTest {
 
     @Test
     void createTrainee_shouldReturnRegisterResponse_whenRequestIsValid() {
-        TraineeRegistrationRequest request = new TraineeRegistrationRequest(
-                "Ali", "Veli", "1999-01-01", "İstanbul"
-        );
+        // given
+        TraineeRegistrationRequest request =
+                new TraineeRegistrationRequest("Ali", "Veli", "1999-01-01", "İstanbul");
 
-        when(traineeRepository.save(any(TraineeEntity.class)))
-                .thenReturn(savedTraineeEntity);
+        User createdUser = new User();
+        createdUser.setUsername("ali.veli");
+        createdUser.setRawPassword("12345");
+        when(userAccountService.createUser("Ali", "Veli")).thenReturn(createdUser);
+
+        when(trainerRepository.existsByUserUsername("ali.veli")).thenReturn(false);
+
+        when(traineeRepository.save(any(TraineeEntity.class))).thenReturn(savedTraineeEntity);
 
         doNothing().when(metrics).incrementRegistered();
+
+        // when
         TraineeRegistrationResponse result = traineeService.createTrainee(request);
 
+        // then
         assertNotNull(result);
         assertEquals("ali.veli", result.username());
         assertEquals("12345", result.password());
 
-        verify(traineeRepository).save(any(TraineeEntity.class));
+        ArgumentCaptor<TraineeEntity> captor = ArgumentCaptor.forClass(TraineeEntity.class);
+        verify(traineeRepository).save(captor.capture());
+        TraineeEntity toSave = captor.getValue();
+        assertNotNull(toSave.getUser());
+
+        verify(metrics).incrementRegistered();
     }
 
     @Test
@@ -565,19 +582,23 @@ class TraineeServiceTest {
 
     @Test
     void createTrainee_shouldThrowException_whenUserIsAlreadyTrainer() {
-        TraineeRegistrationRequest request = new TraineeRegistrationRequest("Ali", "Veli", "2000-01-01", "İzmir");
+        TraineeRegistrationRequest request =
+                new TraineeRegistrationRequest("Ali", "Veli", "2000-01-01", "İzmir");
+
         User createdUser = new User();
         createdUser.setUsername("ali.veli");
+        createdUser.setRawPassword("does-not-matter");
+        when(userAccountService.createUser("Ali", "Veli")).thenReturn(createdUser);
 
         when(trainerRepository.existsByUserUsername("ali.veli")).thenReturn(true);
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            traineeService.createTrainee(request);
-        });
+        BadRequestException ex = assertThrows(BadRequestException.class,
+                () -> traineeService.createTrainee(request));
 
-        assertThat(exception.getMessage()).contains("User cannot be both trainee and trainer");
+        assertThat(ex.getMessage()).contains("User cannot be both trainee and trainer");
         verify(trainerRepository).existsByUserUsername("ali.veli");
         verify(traineeRepository, never()).save(any(TraineeEntity.class));
+        verify(metrics, never()).incrementRegistered();
     }
 
 }
