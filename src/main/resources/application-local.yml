@@ -30,7 +30,7 @@ security:
     max-attempts: 3
     block-minutes: 0.5   # ~15seconds for tests
   jwt:
-    secret: change-me
+    secret: ${JWT_SECRET:'this-is-a-very-long-32+chars-secret-key!!'}
     issuer: gym-crm
     access-token-minutes: 2
   cors:
